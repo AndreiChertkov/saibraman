@@ -8,6 +8,8 @@
 .thumbs.db
 __pycache__/
 _tmp/
-config.toml
-secrets.toml
-logs/*
+
+server_logs/*
+server_prompts/*
+sai_config_client.toml
+sai_config_server.toml
