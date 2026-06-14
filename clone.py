@@ -35,21 +35,22 @@ def copy_to_server():
         if not os.path.isdir(src):
             print(f'WARNING: нет папки {src}, пропуск')
             continue
-        out = clean_out(subprocess.getoutput(
-            f'rsync -az --delete {src}/ {dst}/{d}/'))
+        remote_dir = f'{args.folder_server}/{d}'
+        clean_out(subprocess.getoutput(
+            f'ssh {args.name_server} "rm -rf {remote_dir} && mkdir -p {remote_dir}"'))
+        out = clean_out(subprocess.getoutput(f'scp -r {src}/. {dst}/{d}/'))
         if out:
-            raise ValueError(f'Error sync {d}: {out}')
+            raise ValueError(f'Error copy dir {d}: {out}')
     print('DONE: copy to server')
 
 
 def copy_from_server():
     local = f'{args.folder_client}/server_logs/'
-    remote = f'{args.name_server}:{args.folder_server}/server_logs/'
+    remote = f'{args.name_server}:{args.folder_server}/server_logs'
 
     os.makedirs(local, exist_ok=True)
 
-    cmd = f'rsync -az {remote} {local}'
-    out = clean_out(subprocess.getoutput(cmd))
+    out = clean_out(subprocess.getoutput(f'scp -r {remote}/. {local}'))
     if out:
         print(f'WARNING: logs sync output: {out}')
 
